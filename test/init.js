@@ -65,6 +65,7 @@ lab.experiment('Plugin - init', () => {
       Code.expect(route.path).to.be.equal('/files')
       Code.expect(config.tags).to.not.exist()
       Code.expect(config.auth).to.be.false()
+      Code.expect(config.cors).to.not.exist()
       Code.expect(payload.output).to.be.equal('stream')
       Code.expect(payload.parse).to.be.true()
       Code.expect(payload.allow).to.be.equal('multipart/form-data')
@@ -96,6 +97,7 @@ lab.experiment('Plugin - init', () => {
         path: '/files/{id}',
         tags: ['mock', 'upload'],
         auth: 'mock-strategy',
+        cors: { origin: ['http://localhost'], credentials: true },
         validate: {
           query: Joi.object().required(),
           params: Joi.object().keys({a: Joi.string()}).required(),
@@ -112,6 +114,7 @@ lab.experiment('Plugin - init', () => {
       Code.expect(route.method).to.be.equal('POST')
       Code.expect(route.path).to.be.equal(options.route.path)
       Code.expect(config.tags).to.be.deep.equal(options.route.tags)
+      Code.expect(config.cors).to.be.deep.equal(options.route.cors)
       Code.expect(config.auth).to.be.equal(options.route.auth)
       Code.expect(payload.output).to.be.equal('stream')
       Code.expect(payload.parse).to.be.true()

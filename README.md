@@ -48,6 +48,7 @@ server.register({
 - `[route]` - optional route configuration object similar to the one used in hapi
     - `[path]` - optional route path, defaults to `/files`
     - `[auth]` - auth object like the one specified by the hapi framework, defaults to `false`
+    - `[cors]` - the Cross-Origin Resource Sharing options. CORS headers are disabled by default (false). To enable, set cors to true, or to an object specified by the hapi framework.
     - `[tags]` - tags array like the one specified by the hapi framework, defaults to `undefined`
     - `[validate]` - optional route validation configuration file
         - `[query]` - query validation object like the one specified by the hapi framework
