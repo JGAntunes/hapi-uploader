@@ -36,7 +36,7 @@
   "devDependencies": {
     "code": "^2.1.1",
     "hapi": "^13.2.1",
-    "lab": "^10.3.0",
+    "lab": "^14.3.1",
     "pre-commit": "^1.1.2",
     "snazzy": "^3.0.0",
     "standard": "^6.0.8"

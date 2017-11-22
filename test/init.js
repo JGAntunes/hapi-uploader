@@ -328,7 +328,7 @@ lab.experiment('Plugin - init', () => {
     })
   })
 
-  lab.test('Valid pre method functions', (done) => {
+  lab.test('Valid pre and ext method functions', (done) => {
     const options = {
       upload: {
         path: './',
@@ -339,11 +339,11 @@ lab.experiment('Plugin - init', () => {
     }
     mockServer.route = function (route) {
       Code.expect(route.config.pre).to.be.instanceof(Array)
-      Code.expect(route.config.pre).to.have.length(4)
+      Code.expect(route.config.pre).to.have.length(3)
       Code.expect(route.config.pre[0].assign).to.be.equal('fileNames')
       Code.expect(route.config.pre[1].assign).to.be.equal('preUpload')
       Code.expect(route.config.pre[2].assign).to.be.equal('file')
-      Code.expect(route.config.pre[3].assign).to.be.equal('postUpload')
+      Code.expect(route.config.ext['onPreResponse']).to.be.equal(options.postUpload)
     }
 
     Plugin(mockServer, options, (err) => {
