@@ -1,46 +1,46 @@
 'use strict'
 
 const Lab = require('lab')
-const Code = require('code')
 const Joi = require('joi')
 const Mime = require('mime')
+const expect = require('code').expect
 const pkg = require('../package.json')
 const lab = exports.lab = Lab.script()
-const Plugin = require('../lib/index')
+const plugin = require('../lib/index')
 
 let mockServer = {
   log: console.log
 }
 
-lab.experiment('Plugin - init', () => {
+lab.experiment('Unit tests', () => {
   lab.test('Correct attributes', (done) => {
-    let attributes = Plugin.attributes
-    Code.expect(attributes.name).to.be.equal(pkg.name)
-    Code.expect(attributes.version).to.be.equal(pkg.version)
-    Code.expect(attributes.multiple).to.be.true()
+    let attributes = plugin.attributes
+    expect(attributes.name).to.be.equal(pkg.name)
+    expect(attributes.version).to.be.equal(pkg.version)
+    expect(attributes.multiple).to.be.true()
     done()
   })
 
   lab.test('No upload path', (done) => {
-    Plugin(mockServer, {}, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.equal('Must define a path to upload files')
+    plugin(mockServer, {}, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.equal('Must define a path to upload files')
       done()
     })
   })
 
   lab.test('Null options', (done) => {
-    Plugin(mockServer, null, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.equal('Must define a path to upload files')
+    plugin(mockServer, null, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.equal('Must define a path to upload files')
       done()
     })
   })
 
   lab.test('Invalid upload path', (done) => {
-    Plugin(mockServer, {upload: {path: './invalid/path'}}, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.startWith(
+    plugin(mockServer, {upload: {path: './invalid/path'}}, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.startWith(
         'Must define a valid accessible path to upload files - '
       )
       done()
@@ -48,9 +48,9 @@ lab.experiment('Plugin - init', () => {
   })
 
   lab.test('Invalid upload path', (done) => {
-    Plugin(mockServer, {upload: {path: './invalid/path'}}, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.startWith(
+    plugin(mockServer, {upload: {path: './invalid/path'}}, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.startWith(
         'Must define a valid accessible path to upload files - '
       )
       done()
@@ -61,28 +61,28 @@ lab.experiment('Plugin - init', () => {
     mockServer.route = function (route) {
       const config = route.config
       const payload = config.payload
-      Code.expect(route.method).to.be.equal('POST')
-      Code.expect(route.path).to.be.equal('/files')
-      Code.expect(config.tags).to.not.exist()
-      Code.expect(config.auth).to.be.false()
-      Code.expect(config.cors).to.not.exist()
-      Code.expect(payload.output).to.be.equal('stream')
-      Code.expect(payload.parse).to.be.true()
-      Code.expect(payload.allow).to.be.equal('multipart/form-data')
-      Code.expect(payload.maxBytes).to.not.exist()
-      Code.expect(config.pre).to.be.instanceof(Array)
-      Code.expect(config.pre).to.have.length(1)
-      Code.expect(config.pre[0].assign).to.be.equal('file')
-      Code.expect(config.validate.query).to.not.exist()
-      Code.expect(config.validate.params).to.not.exist()
-      Code.expect(config.validate.headers).to.not.exist()
-      Code.expect(config.validate.auth).to.not.exist()
-      Code.expect(config.validate.payload).to.exist()
-      Code.expect(config.validate.payload.isJoi).to.be.true()
-      Code.expect(config.description).to.be.equal('Uploads a file')
+      expect(route.method).to.be.equal('POST')
+      expect(route.path).to.be.equal('/files')
+      expect(config.tags).to.not.exist()
+      expect(config.auth).to.be.false()
+      expect(config.cors).to.not.exist()
+      expect(payload.output).to.be.equal('stream')
+      expect(payload.parse).to.be.true()
+      expect(payload.allow).to.be.equal('multipart/form-data')
+      expect(payload.maxBytes).to.not.exist()
+      expect(config.pre).to.be.instanceof(Array)
+      expect(config.pre).to.have.length(1)
+      expect(config.pre[0].assign).to.be.equal('file')
+      expect(config.validate.query).to.not.exist()
+      expect(config.validate.params).to.not.exist()
+      expect(config.validate.headers).to.not.exist()
+      expect(config.validate.auth).to.not.exist()
+      expect(config.validate.payload).to.exist()
+      expect(config.validate.payload.isJoi).to.be.true()
+      expect(config.description).to.be.equal('Uploads a file')
     }
-    Plugin(mockServer, {upload: {path: './'}}, (err) => {
-      Code.expect(err).to.not.exist()
+    plugin(mockServer, {upload: {path: './'}}, (err) => {
+      expect(err).to.not.exist()
       done()
     })
   })
@@ -111,47 +111,47 @@ lab.experiment('Plugin - init', () => {
     mockServer.route = function (route) {
       const config = route.config
       const payload = config.payload
-      Code.expect(route.method).to.be.equal('POST')
-      Code.expect(route.path).to.be.equal(options.route.path)
-      Code.expect(config.tags).to.be.deep.equal(options.route.tags)
-      Code.expect(config.cors).to.be.deep.equal(options.route.cors)
-      Code.expect(config.auth).to.be.equal(options.route.auth)
-      Code.expect(payload.output).to.be.equal('stream')
-      Code.expect(payload.parse).to.be.true()
-      Code.expect(payload.allow).to.be.equal('multipart/form-data')
-      Code.expect(payload.maxBytes).to.be.equal(options.upload.maxBytes)
-      Code.expect(config.pre).to.be.instanceof(Array)
-      Code.expect(config.pre).to.have.length(1)
-      Code.expect(config.pre[0].assign).to.be.equal('file')
-      Code.expect(config.validate.query)
+      expect(route.method).to.be.equal('POST')
+      expect(route.path).to.be.equal(options.route.path)
+      expect(config.tags).to.be.deep.equal(options.route.tags)
+      expect(config.cors).to.be.deep.equal(options.route.cors)
+      expect(config.auth).to.be.equal(options.route.auth)
+      expect(payload.output).to.be.equal('stream')
+      expect(payload.parse).to.be.true()
+      expect(payload.allow).to.be.equal('multipart/form-data')
+      expect(payload.maxBytes).to.be.equal(options.upload.maxBytes)
+      expect(config.pre).to.be.instanceof(Array)
+      expect(config.pre).to.have.length(1)
+      expect(config.pre[0].assign).to.be.equal('file')
+      expect(config.validate.query)
         .to.be.deep.equal(options.route.validate.query)
-      Code.expect(config.validate.params)
+      expect(config.validate.params)
         .to.be.deep.equal(options.route.validate.params)
-      Code.expect(config.validate.headers)
+      expect(config.validate.headers)
         .to.be.deep.equal(options.route.validate.headers)
-      Code.expect(config.validate.auth)
+      expect(config.validate.auth)
         .to.be.deep.equal(options.route.validate.auth)
-      Code.expect(config.validate.payload).to.exist()
-      Code.expect(config.validate.payload.isJoi).to.be.true()
+      expect(config.validate.payload).to.exist()
+      expect(config.validate.payload.isJoi).to.be.true()
       // Joi object containing file schema
       let filenameSchema = route.config.validate.payload._inner.patterns[0]
         .rule._inner.children[1].schema._inner.children[0]
       // Joi object containing content-type header
       let contentTypeSchema = route.config.validate.payload._inner.patterns[0]
         .rule._inner.children[1].schema._inner.children[1].schema._inner.children[0]
-      Code.expect(contentTypeSchema.key).to.be.equal('content-type')
+      expect(contentTypeSchema.key).to.be.equal('content-type')
       // Validate extesions (need to convert from mimetypes)
       contentTypeSchema.schema._valids._set.forEach(function (mimeType) {
         let ext = Mime.extension(mimeType)
-        Code.expect(options.route.validate.extensions).to.include(ext)
+        expect(options.route.validate.extensions).to.include(ext)
       })
-      Code.expect().to.be.deep.equal(options.route.vali)
-      Code.expect(filenameSchema.key).to.be.equal('filename')
-      Code.expect(filenameSchema.schema).to.be.deep.equal(filenameSchema.schema)
-      Code.expect(config.description).to.be.equal('Uploads a file')
+      expect().to.be.deep.equal(options.route.vali)
+      expect(filenameSchema.key).to.be.equal('filename')
+      expect(filenameSchema.schema).to.be.deep.equal(filenameSchema.schema)
+      expect(config.description).to.be.equal('Uploads a file')
     }
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.not.exist()
+    plugin(mockServer, options, (err) => {
+      expect(err).to.not.exist()
       done()
     })
   })
@@ -172,10 +172,10 @@ lab.experiment('Plugin - init', () => {
         }
       }
     }
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.exist()
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message)
+    plugin(mockServer, options, (err) => {
+      expect(err).to.exist()
+      expect(err).to.be.instanceof(Error)
+      expect(err.message)
         .to.be.equal('Can\'t validate both extensions and mime type.')
       done()
     })
@@ -201,14 +201,14 @@ lab.experiment('Plugin - init', () => {
       // Joi object containing content-type header
       const contentTypeSchema = validate.payload._inner.patterns[0]
         .rule._inner.children[1].schema._inner.children[1].schema._inner.children[0]
-      Code.expect(contentTypeSchema.key).to.be.equal('content-type')
+      expect(contentTypeSchema.key).to.be.equal('content-type')
       // Validate extesions (need to convert from mimetypes)
       contentTypeSchema.schema._valids._set.forEach(function (mimeType) {
-        Code.expect(options.route.validate.mimeTypes).to.include(mimeType)
+        expect(options.route.validate.mimeTypes).to.include(mimeType)
       })
     }
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.not.exist()
+    plugin(mockServer, options, (err) => {
+      expect(err).to.not.exist()
       done()
     })
   })
@@ -228,9 +228,9 @@ lab.experiment('Plugin - init', () => {
         }
       }
     }
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.equal(
+    plugin(mockServer, options, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.equal(
         'MimeTypes provided to validation must be an array.'
       )
       done()
@@ -252,9 +252,9 @@ lab.experiment('Plugin - init', () => {
         }
       }
     }
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.equal(
+    plugin(mockServer, options, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.equal(
         'Extensions provided to validation must be an array.'
       )
       done()
@@ -268,9 +268,9 @@ lab.experiment('Plugin - init', () => {
       },
       preUpload: 'invalid'
     }
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.equal(
+    plugin(mockServer, options, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.equal(
         'Pre upload must be a function'
       )
       done()
@@ -284,9 +284,9 @@ lab.experiment('Plugin - init', () => {
       },
       postUpload: 'invalid'
     }
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.equal(
+    plugin(mockServer, options, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.equal(
         'Post upload must be a function'
       )
       done()
@@ -300,9 +300,9 @@ lab.experiment('Plugin - init', () => {
         generateName: 'invalid'
       }
     }
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.be.instanceof(Error)
-      Code.expect(err.message).to.be.equal(
+    plugin(mockServer, options, (err) => {
+      expect(err).to.be.instanceof(Error)
+      expect(err.message).to.be.equal(
         'Generate name must be a function'
       )
       done()
@@ -317,13 +317,13 @@ lab.experiment('Plugin - init', () => {
       }
     }
     mockServer.route = function (route) {
-      Code.expect(route.config.pre).to.be.instanceof(Array)
-      Code.expect(route.config.pre).to.have.length(2)
-      Code.expect(route.config.pre[0].assign).to.be.equal('fileNames')
+      expect(route.config.pre).to.be.instanceof(Array)
+      expect(route.config.pre).to.have.length(2)
+      expect(route.config.pre[0].assign).to.be.equal('fileNames')
     }
 
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.not.exist()
+    plugin(mockServer, options, (err) => {
+      expect(err).to.not.exist()
       done()
     })
   })
@@ -338,16 +338,16 @@ lab.experiment('Plugin - init', () => {
       postUpload: (request, reply) => reply()
     }
     mockServer.route = function (route) {
-      Code.expect(route.config.pre).to.be.instanceof(Array)
-      Code.expect(route.config.pre).to.have.length(3)
-      Code.expect(route.config.pre[0].assign).to.be.equal('fileNames')
-      Code.expect(route.config.pre[1].assign).to.be.equal('preUpload')
-      Code.expect(route.config.pre[2].assign).to.be.equal('file')
-      Code.expect(route.config.ext['onPreResponse']).to.be.equal(options.postUpload)
+      expect(route.config.pre).to.be.instanceof(Array)
+      expect(route.config.pre).to.have.length(3)
+      expect(route.config.pre[0].assign).to.be.equal('fileNames')
+      expect(route.config.pre[1].assign).to.be.equal('preUpload')
+      expect(route.config.pre[2].assign).to.be.equal('file')
+      expect(route.config.ext['onPreResponse'].method).to.be.equal(options.postUpload)
     }
 
-    Plugin(mockServer, options, (err) => {
-      Code.expect(err).to.not.exist()
+    plugin(mockServer, options, (err) => {
+      expect(err).to.not.exist()
       done()
     })
   })
